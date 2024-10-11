@@ -8,12 +8,15 @@ class BFSolver : public ATSPSolver{
     private:
         int bestCost;
         int* bestPath;
+
+        int numCities;
         int** distanceMatrix;
 
     public:
-        BFSolver(const int** matrix, const int num_cities);
+        BFSolver(int** inputMatrix, const int numCities);
         void solve() override;
         void printResults() override;
+        ~BFSolver();
 };
 
 #endif // BF_ATSP_HPP

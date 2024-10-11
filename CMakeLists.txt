@@ -10,6 +10,7 @@ include_directories(data_structures algorithms)
 set(SOURCES
     main.cpp
     matrixreader.cpp
+    algorithms/bf_atsp.cpp
 )
 
 add_executable(atsp ${SOURCES})
