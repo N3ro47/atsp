@@ -2,7 +2,6 @@
 #define BF_ATSP_HPP
 
 #include "atspsolver.hpp"
-#include "vector.hpp"
 
 class BFSolver : public ATSPSolver{
     private:
