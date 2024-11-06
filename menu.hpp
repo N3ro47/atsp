@@ -4,8 +4,7 @@
 #include <iostream>
 #include <string>
 #include "matrixreader.hpp"
-#include "algorithms/bf_atsp.hpp"
-#include "algorithms/bb_atsp.hpp"
+#include "algorithms/atspsolver.hpp"
 // Add dynamic programming ATSP solver include when available
 
 class Menu {

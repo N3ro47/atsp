@@ -7,13 +7,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 include_directories(algorithms utils)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")#-Wall -g
+
 
 set(SOURCES
     main.cpp
     matrixreader.cpp
     algorithms/bf_atsp.cpp
     algorithms/bb_atsp.cpp
+    algorithms/sa_atsp.cpp
     menu.cpp
 )
 

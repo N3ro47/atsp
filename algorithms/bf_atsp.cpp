@@ -101,7 +101,7 @@ void BFSolver::solve()
         {
             pathLength += distanceMatrix[path[i]][path[i + 1]];
         }
-        pathLength += distanceMatrix[path[numCities - 1]][path[0]]; // Closing the cycle
+        pathLength += distanceMatrix[path[numCities - 1]][0]; // Closing the cycle
 
         // If the path length is shorter, update the best path and best cost
         if (pathLength < bestCost)
@@ -141,4 +141,15 @@ BFSolver::~BFSolver()
         delete[] distanceMatrix[i];
     }
     delete[] distanceMatrix;
+}
+
+int BFSolver::getBestCost()
+{
+    return bestCost;
+}
+
+// Get the best path
+int *BFSolver::getBestPath()
+{
+    return bestPath;
 }

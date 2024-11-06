@@ -2,7 +2,6 @@
 #include "bb_atsp.hpp"
 #include "../utils/utils.hpp"
 
-// Constructor
 BnBSolver::BnBSolver(int **inputMatrix, int numCities) {
     this->numCities = numCities;
     this->distanceMatrix = new int *[numCities];
@@ -14,10 +13,9 @@ BnBSolver::BnBSolver(int **inputMatrix, int numCities) {
     }
 
     this->bestPath = new int[numCities];
-    this->bestCost = __INT_MAX__;
+    this->bestCost = __INT_MAX__; // Start with max cost
 }
 
-// Destructor
 BnBSolver::~BnBSolver() {
     delete[] bestPath;
     for (int i = 0; i < numCities; i++) {
@@ -26,33 +24,39 @@ BnBSolver::~BnBSolver() {
     delete[] distanceMatrix;
 }
 
-// Calculate Lower Bound
-int BnBSolver::calculateLowerBound(int *partialPath, int depth) {
+int BnBSolver::calculateLowerBound(int *partialPath, int depth, bool *visited) {
     int cost = 0;
+
+    // Calculate the cost of the current path
     for (int i = 0; i < depth - 1; i++) {
         cost += distanceMatrix[partialPath[i]][partialPath[i + 1]];
     }
-    // Add a heuristic lower bound for remaining cities
-    for (int i = depth; i < numCities; i++) {
+
+    // Add heuristic lower bound for genuinely unvisited cities
+    for (int i = 0; i < numCities; i++) {
+        if (visited[i]) continue; // Skip already visited cities
         int minCost = __INT_MAX__;
         for (int j = 0; j < numCities; j++) {
-            if (i != j && distanceMatrix[i][j] < minCost) {
+            if (!visited[j] && distanceMatrix[i][j] < minCost) {
                 minCost = distanceMatrix[i][j];
             }
         }
-        cost += minCost;
+        if (minCost != __INT_MAX__) {
+            cost += minCost; // Only add if there's a valid minimum cost
+        }
     }
+
     return cost;
 }
 
-// Branch and Bound with fixed start at city 0
-void BnBSolver::branchAndBound(int *path, int depth) {
+void BnBSolver::branchAndBound(int *path, int depth, bool *visited) {
+    // Base case: if depth equals the number of cities, close the loop
     if (depth == numCities) {
         int totalCost = 0;
         for (int i = 0; i < numCities - 1; i++) {
             totalCost += distanceMatrix[path[i]][path[i + 1]];
         }
-        totalCost += distanceMatrix[path[numCities - 1]][path[0]]; // close the loop
+        totalCost += distanceMatrix[path[numCities - 1]][path[0]]; // Closing the loop
 
         if (totalCost < bestCost) {
             bestCost = totalCost;
@@ -64,29 +68,37 @@ void BnBSolver::branchAndBound(int *path, int depth) {
     }
 
     for (int i = depth; i < numCities; i++) {
-        if (depth == 1 && i == 0) continue; // Skip swapping with city 0 to fix it as start
+        if (depth == 1 && i == 0) continue; // Skip city 0 in the first swap
+
+        // Swap cities in the path to generate new paths
         swap(path[depth], path[i]);
-        int lowerBound = calculateLowerBound(path, depth + 1);
-        if (lowerBound < bestCost) {
-            branchAndBound(path, depth + 1);
+        visited[path[depth]] = true; // Mark the city as visited
+
+        int lowerBound = calculateLowerBound(path, depth + 1, visited);
+        if (lowerBound < bestCost) { // Only explore if lowerBound is promising
+            branchAndBound(path, depth + 1, visited);
         }
-        swap(path[depth], path[i]); // backtrack
+
+        // Backtrack: unmark the city and swap back
+        visited[path[depth]] = false;
+        swap(path[depth], path[i]); // Backtrack to previous state
     }
 }
 
-// Solve function
 void BnBSolver::solve() {
     int *path = new int[numCities];
     for (int i = 0; i < numCities; i++) {
-        path[i] = i;
+        path[i] = i; // Initialize path
     }
 
-    branchAndBound(path, 1); // Start branching from depth 1 to fix city 0
+    bool *visited = new bool[numCities](); // Initialize visited array to false
+    visited[0] = true; // Start from city 0
+    branchAndBound(path, 1, visited); // Start branching from depth 1
 
+    delete[] visited; // Clean up
     delete[] path;
 }
 
-// Print Results
 void BnBSolver::printResults() {
     std::cout << "Minimum cost: " << bestCost << std::endl;
     std::cout << "Best path: ";
@@ -94,4 +106,15 @@ void BnBSolver::printResults() {
         std::cout << bestPath[i] << " ";
     }
     std::cout << std::endl;
+}
+
+int BnBSolver::getBestCost()
+{
+    return bestCost;
+}
+
+// Get the best path
+int *BnBSolver::getBestPath()
+{
+    return bestPath;
 }

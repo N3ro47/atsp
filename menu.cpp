@@ -1,5 +1,8 @@
 #include "menu.hpp"
 #include "utils.hpp"
+#include "algorithms/bb_atsp.hpp"
+#include "algorithms/bf_atsp.hpp"
+#include "algorithms/sa_atsp.hpp"
 
 #include <chrono>
 #include <iomanip>
@@ -53,13 +56,15 @@ void Menu::manualMode()
     }
 }
 
-
 void Menu::solveATSP(int **matrix, int size)
 {
+    loopprint:
     int choice;
     std::cout << "Select solving method:\n";
     std::cout << "1. Brute Force\n";
     std::cout << "2. Branch & Bound\n";
+    std::cout << "3. Simulated annealing\n";
+    std::cout << "4. Show matrix\n";
     std::cout << "Choose an option: ";
     std::cin >> choice;
 
@@ -74,26 +79,37 @@ void Menu::solveATSP(int **matrix, int size)
     case 2:
         solver = new BnBSolver(matrix, size);
         break;
+    case 3:
+        solver = new SASolver(matrix, size);
+        break;
+    case 4:
+        printMatrix(matrix, size);
+        delete[] path; // delete the original path array
+        goto loopprint;
     default:
         std::cout << "Invalid choice.\n";
-        delete[] path;
+        delete[] path; // delete the original path array
         return;
     }
 
     solver->solve();
     solver->printResults();
+    cost = solver->getBestCost();
+    int *bestPath = solver->getBestPath(); // get the best path from the solver
+    // use the bestPath variable instead of reassigning path
 
     delete solver;
-    delete[] path;
 }
 
-void Menu::automaticMode() {
+void Menu::automaticMode()
+{
     int minSize, maxSize, step, instances, choice;
-    
+
     // Ask the user to select the solving method
     std::cout << "Select solving method:\n";
     std::cout << "1. Brute Force\n";
     std::cout << "2. Branch & Bound\n";
+    std::cout << "3. Simulated annealing\n";
     std::cout << "Choose an option: ";
     std::cin >> choice;
 
@@ -110,31 +126,37 @@ void Menu::automaticMode() {
     std::cout << std::fixed << std::setprecision(9);
 
     // Loop through each size N and generate instances
-    for (int size = minSize; size <= maxSize; size += step) {
+    for (int size = minSize; size <= maxSize; size += step)
+    {
         double totalTime = 0.0;
 
-        for (int i = 0; i < instances; ++i) {
-            int** matrix = generateRandomMatrix(size);
+        for (int i = 0; i < instances; ++i)
+        {
+            int **matrix = generateRandomMatrix(size);
 
             // Instantiate the solver based on the selected option
-            switch (choice) {
-                case 1:
-                    solver = new BFSolver(matrix, size);
-                    break;
-                case 2:
-                    solver = new BnBSolver(matrix, size);
-                    break;
-                default:
-                    std::cout << "Invalid choice.\n";
-                    deleteMatrix(matrix, size);
-                    return;
+            switch (choice)
+            {
+            case 1:
+                solver = new BFSolver(matrix, size);
+                break;
+            case 2:
+                solver = new BnBSolver(matrix, size);
+                break;
+            case 3:
+                solver = new SASolver(matrix, size);
+                break;
+            default:
+                std::cout << "Invalid choice.\n";
+                deleteMatrix(matrix, size);
+                return;
             }
 
-            // Measure 
+            // Measure
             auto start = std::chrono::high_resolution_clock::now();
             solver->solve();
             auto end = std::chrono::high_resolution_clock::now();
-            
+
             std::chrono::duration<double> duration = end - start;
             totalTime += duration.count();
 
@@ -142,10 +164,9 @@ void Menu::automaticMode() {
             delete solver;
             deleteMatrix(matrix, size);
         }
-        
+
         // Average time for current size
         double averageTime = totalTime / instances;
         std::cout << "N = " << size << ", Average Time = " << averageTime << " s\n";
     }
 }
-

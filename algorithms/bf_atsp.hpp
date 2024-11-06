@@ -16,6 +16,9 @@ class BFSolver : public ATSPSolver{
         void solve() override;
         void printResults() override;
         ~BFSolver();
+
+        int getBestCost();
+        int* getBestPath() ;
 };
 
 #endif // BF_ATSP_HPP
