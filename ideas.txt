@@ -1,0 +1,17 @@
+2. Choose a cooling schedule
+
+The cooling schedule is a crucial component of the SA algorithm, as it determines how the temperature decreases over time. Common cooling schedules include:
+
+    Exponential cooling: T(k) = T0 * exp(-k/T0)
+    Linear cooling: T(k) = T0 - k * alpha
+    Adaptive cooling: T(k) = T0 / (1 + k/T0)
+
+where T(k) is the temperature at iteration k, T0 is the initial temperature, and alpha is a parameter that controls the cooling rate.
+
+3. Determine the initial temperature
+
+The initial temperature T0 should be high enough to allow the algorithm to explore the solution space, but not so high that it gets stuck in an infinite loop. A common approach is to set T0 to a value that is 10-100 times the average distance between cities.
+
+4. Determine the maximum number of iterations
+
+The maximum number of iterations max_iter should be set based on the size of the problem instance and the desired level of accuracy. A common approach is to set max_iter to a value that is proportional to the number of cities n, such as max_iter = n^2 or max_iter = n^3.
