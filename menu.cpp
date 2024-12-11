@@ -91,8 +91,14 @@ void Menu::solveATSP(int **matrix, int size)
         delete[] path; // delete the original path array
         return;
     }
-
+    std::cout << std::fixed << std::setprecision(9);
+    auto start = std::chrono::high_resolution_clock::now();
     solver->solve();
+    auto end = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "N = " << size << ", Time = " << duration.count() << " s\n";
+
     solver->printResults();
     cost = solver->getBestCost();
     int *bestPath = solver->getBestPath(); // get the best path from the solver

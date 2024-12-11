@@ -71,14 +71,14 @@ int calculateCost(int *path, int numCities, int **distanceMatrix)
     return pathLength;
 }
 
-// Generate a neighbor by swapping two cities, excluding city 0
+
 void generateNeighbor(int *path, int numCities) {
-    int i = rand() % (numCities - 1) + 1; // Avoid index 0
-    int j = rand() % (numCities - 1) + 1; // Avoid index 0
+    int i = rand() % (numCities - 1) + 1;
+    int j = rand() % (numCities - 1) + 1; 
     while (i == j) {
-        j = rand() % (numCities - 1) + 1; // Ensure two distinct cities
+        j = rand() % (numCities - 1) + 1;
     }
-    swap(path[i], path[j]); // Swap two cities
+    swap(path[i], path[j]);
 }
 
 
@@ -88,7 +88,7 @@ void SASolver::solve() {
     double temperature = 1000.0;        // Initial temperature
     double coolingRate = 0.99;         // Cooling factor (alpha)
     double minTemperature = 1e-3;      // Stopping temperature
-    //int iterationsPerTemp = numCities * numCities; // O(n^2)
+    int iterationsPerTemp = numCities * numCities; // O(n^2)
 
     //int iterationsPerTemp = numCities * numCities * numCities; // O(n^3)
 
@@ -96,7 +96,7 @@ void SASolver::solve() {
     
     //int iterationsPerTemp = static_cast<int>(powf64x(static_cast<long double>(numCities), 2.8)); // O(n^2 * sqrt(n))
 
-    int iterationsPerTemp = numCities * numCities * log(numCities); // n^2 * log(n)
+    //int iterationsPerTemp = numCities * numCities * log(numCities); // n^2 * log(n)
 
 
     // Start with a greedy initial solution
@@ -111,7 +111,7 @@ void SASolver::solve() {
     int currentCost = bestCost;
 
     // Simulated Annealing process
-    srand(time(0)); // Seed for random number generator
+    srand(time(0)); 
     while (temperature > minTemperature) {
         for (int iter = 0; iter < iterationsPerTemp; ++iter) {
             // Generate a neighboring solution
@@ -121,7 +121,6 @@ void SASolver::solve() {
             }
             generateNeighbor(neighborPath, numCities);
 
-            // Calculate the cost of the neighboring solution
             int neighborCost = calculateCost(neighborPath, numCities, distanceMatrix);
 
             // Calculate cost difference
@@ -143,14 +142,14 @@ void SASolver::solve() {
                 }
             }
 
-            delete[] neighborPath; // Clean up neighborPath
+            delete[] neighborPath; 
         }
 
         // Cool down
         temperature *= coolingRate;
     }
 
-    delete[] currentPath; // Clean up currentPath
+    delete[] currentPath; 
 }
 
 
