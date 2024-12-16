@@ -13,6 +13,7 @@ public:
     void displayMenu();
 
 private:
+    void loadMatrix();
     void manualMode();
     void automaticMode();
     void solveATSP(int** matrix, int size);

@@ -8,7 +8,14 @@ public:
     SASolver(int **inputMatrix, int numCities);
     ~SASolver();
 
-    void solve();
+    void solve() override;
+    // Updated solve function with default parameters
+    void solveWithParameters(  // Parameterized version with a distinct name
+        double initialTemperature,
+        double coolingRate,
+        double minTemperature,
+        int iterationsPerTemp
+    );
     void printResults();
     int getBestCost();
     int* getBestPath();
@@ -18,7 +25,6 @@ private:
     int numCities;
     int *bestPath;
     int bestCost;
-
 };
 
 #endif // SA_ATSP_HPP

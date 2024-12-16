@@ -11,8 +11,8 @@
 
 int main (int argc, char *argv[]) {
 
-  //Menu menu;
-  //menu.displayMenu();
+  Menu menu;
+  menu.displayMenu();
 
     /*
   MatrixReader fileMatrix;
@@ -87,6 +87,8 @@ int main (int argc, char *argv[]) {
     std::cout << "Mismatch rate: " << mismatchRate * 100 << "%\n";
     std::cout << "Average difference in cost if wrong: " << avgDifference << "\n";
      */
+
+    /*
     // Set floating-point precision for output
     std::cout << std::fixed << std::setprecision(9);
 
@@ -155,6 +157,7 @@ int main (int argc, char *argv[]) {
         }
   
 }
+*/
   return 0;
 }
 

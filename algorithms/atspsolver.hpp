@@ -6,7 +6,7 @@ public:
     virtual void solve() = 0;
 
     virtual void printResults() = 0;
-    virtual ~ATSPSolver() {}
+    virtual ~ATSPSolver() = default;
     virtual int getBestCost(){ return -1; }
     virtual int* getBestPath(){ return nullptr; }
 

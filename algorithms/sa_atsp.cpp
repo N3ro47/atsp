@@ -81,23 +81,22 @@ void generateNeighbor(int *path, int numCities) {
     swap(path[i], path[j]);
 }
 
+void SASolver::solve() {
+    solveWithParameters(1000.0, 0.99, 1e-3, 0);
+}
 
 // Solve the ATSP using Simulated Annealing
-void SASolver::solve() {
-    // Parameters for Simulated Annealing
-    double temperature = 1000.0;        // Initial temperature
-    double coolingRate = 0.99;         // Cooling factor (alpha)
-    double minTemperature = 1e-3;      // Stopping temperature
-    int iterationsPerTemp = numCities * numCities; // O(n^2)
-
-    //int iterationsPerTemp = numCities * numCities * numCities; // O(n^3)
-
-    //int iterationsPerTemp = numCities * numCities * sqrt(numCities); // O(n^2 * sqrt(n))
-    
-    //int iterationsPerTemp = static_cast<int>(powf64x(static_cast<long double>(numCities), 2.8)); // O(n^2 * sqrt(n))
-
-    //int iterationsPerTemp = numCities * numCities * log(numCities); // n^2 * log(n)
-
+void SASolver::solveWithParameters(
+    double initialTemperature,
+    double coolingRate,
+    double minTemperature,
+    int iterationsPerTemp
+) {
+    // Use default for iterationsPerTemp if not explicitly provided
+    if (iterationsPerTemp == 0) {
+       
+        iterationsPerTemp = numCities * numCities;  // Default O(n^2)
+    }
 
     // Start with a greedy initial solution
     generateIntialPath(distanceMatrix, numCities, bestPath);
@@ -112,6 +111,7 @@ void SASolver::solve() {
 
     // Simulated Annealing process
     srand(time(0)); 
+    double temperature = initialTemperature;  // Initialize with the given or default value
     while (temperature > minTemperature) {
         for (int iter = 0; iter < iterationsPerTemp; ++iter) {
             // Generate a neighboring solution

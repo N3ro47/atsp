@@ -7,37 +7,45 @@
 #include <chrono>
 #include <iomanip>
 
-void Menu::displayMenu()
-{
+void Menu::displayMenu() {
     int choice;
-    do
-    {
+    do {
         std::cout << "===== ATSP Solver Menu =====\n";
-        std::cout << "1. Manual Mode\n";
-        std::cout << "2. Automatic Mode\n";
-        std::cout << "3. Exit\n";
+        std::cout << "1. Load Matrix\n";
+        std::cout << "2. Solve ATSP\n";
+        std::cout << "3. Show Matrix\n";
+        std::cout << "4. Exit\n";
         std::cout << "Choose an option: ";
         std::cin >> choice;
 
-        switch (choice)
-        {
+        switch (choice) {
         case 1:
-            manualMode();
+            loadMatrix();
             break;
         case 2:
-            automaticMode();
+            if (matrixReader.getMatrix() != nullptr) {
+                solveATSP(matrixReader.getMatrix(), matrixReader.getMatrixSize());
+            } else {
+                std::cout << "No matrix loaded. Please load a matrix first.\n";
+            }
             break;
         case 3:
+            if (matrixReader.getMatrix() != nullptr) {
+                printMatrix(matrixReader.getMatrix(), matrixReader.getMatrixSize());
+            } else {
+                std::cout << "No matrix loaded. Please load a matrix first.\n";
+            }
+            break;
+        case 4:
             std::cout << "Exiting.\n";
             break;
         default:
             std::cout << "Invalid choice.\n";
         }
-    } while (choice != 3);
+    } while (choice != 4);
 }
 
-void Menu::manualMode()
-{
+void Menu::loadMatrix() {
     std::string filename;
     std::cout << "Enter the matrix filename: ";
     std::cin >> filename;
@@ -46,66 +54,95 @@ void Menu::manualMode()
     int **matrix = matrixReader.getMatrix();
     int size = matrixReader.getMatrixSize();
 
-    if (matrix != nullptr && size > 0)
-    {
-        solveATSP(matrix, size);
-    }
-    else
-    {
+    if (matrix != nullptr && size > 0) {
+        std::cout << "Matrix loaded successfully.\n";
+    } else {
         std::cout << "Error reading matrix.\n";
     }
 }
 
-void Menu::solveATSP(int **matrix, int size)
-{
-    loopprint:
-    int choice;
-    std::cout << "Select solving method:\n";
-    std::cout << "1. Brute Force\n";
-    std::cout << "2. Branch & Bound\n";
-    std::cout << "3. Simulated annealing\n";
-    std::cout << "4. Show matrix\n";
-    std::cout << "Choose an option: ";
-    std::cin >> choice;
+void Menu::solveATSP(int **matrix, int size) {
+    // Static variables to retain previous SA parameters
+    static double initialTemp = 1000.0;
+    static double coolingRate = 0.99;
+    static double minTemp = 1e-3;
+    static int iterationsPerTemp = 0;
 
-    int cost;
-    int *path = new int[size];
+    while (true) {
+        int choice;
+        std::cout << "\nSelect solving method:\n";
+        std::cout << "1. Brute Force\n";
+        std::cout << "2. Branch & Bound\n";
+        std::cout << "3. Simulated Annealing\n";
+        std::cout << "4. Go Back\n";
+        std::cout << "Choose an option: ";
+        std::cin >> choice;
 
-    switch (choice)
-    {
-    case 1:
-        solver = new BFSolver(matrix, size);
-        break;
-    case 2:
-        solver = new BnBSolver(matrix, size);
-        break;
-    case 3:
-        solver = new SASolver(matrix, size);
-        break;
-    case 4:
-        printMatrix(matrix, size);
-        delete[] path; // delete the original path array
-        goto loopprint;
-    default:
-        std::cout << "Invalid choice.\n";
-        delete[] path; // delete the original path array
-        return;
+        if (choice == 4) return; // Exit to the previous menu
+
+        int *path = new int[size];
+        switch (choice) {
+        case 1:
+            solver = new BFSolver(matrix, size);
+            break;
+        case 2:
+            solver = new BnBSolver(matrix, size);
+            break;
+        case 3: {
+            solver = new SASolver(matrix, size);
+
+            // Prompt user to choose parameter type
+            int saChoice;
+            std::cout << "Simulated Annealing Parameters:\n";
+            std::cout << "1. Use previous parameters\n";
+            std::cout << "2. Use default parameters\n";
+            std::cout << "3. Enter new parameters\n";
+            std::cout << "Choose an option: ";
+            std::cin >> saChoice;
+
+            if (saChoice == 3) { // Enter new parameters
+                std::cout << "Enter initial temperature (default: " << initialTemp << "): ";
+                std::cin >> initialTemp;
+                std::cout << "Enter cooling rate (default: " << coolingRate << "): ";
+                std::cin >> coolingRate;
+                std::cout << "Enter minimum temperature (default: " << minTemp << "): ";
+                std::cin >> minTemp;
+                std::cout << "Enter iterations per temperature (default: "
+                          << (iterationsPerTemp == 0 ? "numCities^2" : std::to_string(iterationsPerTemp)) << "): ";
+                std::cin >> iterationsPerTemp;
+            } else if (saChoice == 2) { // Use default parameters
+                initialTemp = 1000.0;
+                coolingRate = 0.99;
+                minTemp = 1e-3;
+                iterationsPerTemp = 0; // Default: numCities^2
+            }
+
+            // Call the parameterized solve function
+            dynamic_cast<SASolver *>(solver)->solveWithParameters(initialTemp, coolingRate, minTemp, iterationsPerTemp);
+            break;
+        }
+        default:
+            std::cout << "Invalid choice.\n";
+            delete[] path;
+            continue;
+        }
+
+        // Measure execution time
+        std::cout << std::fixed << std::setprecision(9);
+        auto start = std::chrono::high_resolution_clock::now();
+        solver->solve(); // Runs the selected algorithm
+        auto end = std::chrono::high_resolution_clock::now();
+
+        std::chrono::duration<double> duration = end - start;
+        std::cout << "N = " << size << ", Time = " << duration.count() << " s\n";
+
+        solver->printResults();
+        delete solver;
     }
-    std::cout << std::fixed << std::setprecision(9);
-    auto start = std::chrono::high_resolution_clock::now();
-    solver->solve();
-    auto end = std::chrono::high_resolution_clock::now();
-
-    std::chrono::duration<double> duration = end - start;
-    std::cout << "N = " << size << ", Time = " << duration.count() << " s\n";
-
-    solver->printResults();
-    cost = solver->getBestCost();
-    int *bestPath = solver->getBestPath(); // get the best path from the solver
-    // use the bestPath variable instead of reassigning path
-
-    delete solver;
 }
+
+
+
 
 void Menu::automaticMode()
 {

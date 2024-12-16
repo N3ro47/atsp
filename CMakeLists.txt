@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 include_directories(algorithms utils)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=znver3 -mtune=znver3 -ffast-math -funroll-loops -flto")#-Wall -g
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -mtune=native -ffast-math -funroll-loops -flto")#-Wall -g
 #-march=icelake-client -mtune=icelake-client
 
 
