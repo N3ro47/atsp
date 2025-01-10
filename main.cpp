@@ -4,6 +4,7 @@
 #include "bf_atsp.hpp"
 #include "bb_atsp.hpp"
 #include "sa_atsp.hpp"
+#include "ga_atsp.hpp"
 #include "menu.hpp"
 #include "utils/utils.hpp"
 #include <chrono>
@@ -11,8 +12,8 @@
 
 int main (int argc, char *argv[]) {
 
-  Menu menu;
-  menu.displayMenu();
+  //Menu menu;
+  //menu.displayMenu();
 
     /*
   MatrixReader fileMatrix;
@@ -29,8 +30,7 @@ int main (int argc, char *argv[]) {
   bb_solver.solve();
   bb_solver.printResults();
   //SASolver sa_solver
-
- //testing correctness of bb against bf 
+*//* //testing correctness of bb against bf 
 
     int counter = 0;                     // Count the number of tests with different results
     int numTests = 10000;               // Number of tests to run for comparing BF and SA solvers
@@ -50,7 +50,7 @@ int main (int argc, char *argv[]) {
         bfSolver->printResults();
 
         // Initialize and solve with Simulated Annealing Solver (SASolver)
-        SASolver *saSolver = new SASolver(matrix, numCities);
+        GASolver *saSolver = new GASolver(matrix, numCities);
         saSolver->solve();
         int saCost = saSolver->getBestCost();
         saSolver->printResults();
@@ -86,15 +86,15 @@ int main (int argc, char *argv[]) {
     std::cout << "Number of mismatches: " << counter << "\n";
     std::cout << "Mismatch rate: " << mismatchRate * 100 << "%\n";
     std::cout << "Average difference in cost if wrong: " << avgDifference << "\n";
-     */
+    */
 
-    /*
+    
     // Set floating-point precision for output
     std::cout << std::fixed << std::setprecision(9);
 
     // List of problem files
     std::vector<std::string> problemFiles = {"ftv47.atsp","ftv64.atsp","ftv70.atsp","kro124p.atsp","ftv170.atsp","rbg323.atsp","rbg443.atsp"}; // Add file names here
-    int runs = 40;
+    int runs = 10;
     
 
     for (const auto& file : problemFiles) {  
@@ -116,7 +116,7 @@ int main (int argc, char *argv[]) {
             auto start = std::chrono::high_resolution_clock::now();
 
             // Solve the problem using SASolver
-            SASolver solver(matrix, size);
+            GASolver solver(matrix, size);
             solver.solve();
             int solutionCost = solver.getBestCost();
 
@@ -157,7 +157,7 @@ int main (int argc, char *argv[]) {
         }
   
 }
-*/
+
   return 0;
 }
 

@@ -8,8 +8,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include_directories(algorithms utils)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -mtune=native -ffast-math -funroll-loops -flto")#-Wall -g
-#-march=icelake-client -mtune=icelake-client
-
 
 set(SOURCES
     main.cpp
@@ -17,6 +15,7 @@ set(SOURCES
     algorithms/bf_atsp.cpp
     algorithms/bb_atsp.cpp
     algorithms/sa_atsp.cpp
+    algorithms/ga_atsp.cpp
     menu.cpp
 )
 
