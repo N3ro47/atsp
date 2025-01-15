@@ -15,3 +15,5 @@ If you find a bug, it’s probably a feature. If it breaks, you’re in for an a
 
 Happy coding, and may your projects be more organized than this one.
 (No guarantees about sanity or stability included.)
+
+Projektowanie efektywnych algorytmów (INEK00032P) – semestr 5
