@@ -12,8 +12,10 @@
 
 int main (int argc, char *argv[]) {
 
-  //Menu menu;
-  //menu.displayMenu();
+  Menu menu;
+  menu.displayMenu();
+  return 0;
+}
 
     /*
   MatrixReader fileMatrix;
@@ -30,8 +32,8 @@ int main (int argc, char *argv[]) {
   bb_solver.solve();
   bb_solver.printResults();
   //SASolver sa_solver
-*//* //testing correctness of bb against bf 
-
+*/ //testing correctness of bb against bf 
+    /*
     int counter = 0;                     // Count the number of tests with different results
     int numTests = 10000;               // Number of tests to run for comparing BF and SA solvers
     int numCities = 10;                  // Size of each matrix to test with (can vary this)
@@ -87,14 +89,13 @@ int main (int argc, char *argv[]) {
     std::cout << "Mismatch rate: " << mismatchRate * 100 << "%\n";
     std::cout << "Average difference in cost if wrong: " << avgDifference << "\n";
     */
-
-    
+    /*
     // Set floating-point precision for output
     std::cout << std::fixed << std::setprecision(9);
 
     // List of problem files
     std::vector<std::string> problemFiles = {"ftv47.atsp","ftv64.atsp","ftv70.atsp","kro124p.atsp","ftv170.atsp","rbg323.atsp","rbg443.atsp"}; // Add file names here
-    int runs = 10;
+    int runs = 40;
     
 
     for (const auto& file : problemFiles) {  
@@ -155,11 +156,12 @@ int main (int argc, char *argv[]) {
         {
             std::cout << "Error reading matrix.\n";
         }
+
   
 }
-
-  return 0;
-}
+*/
+  
+//}
 
 
 

@@ -14,9 +14,9 @@ public:
         double mutationRate,
         double crossoverRate
     );
-    void printResults();
-    int getBestCost();
-    int *getBestPath();
+    void  printResults() override;
+    int  getBestCost() override;
+    int  *getBestPath() override;
 
 private:
     int **distanceMatrix;
@@ -24,11 +24,12 @@ private:
     int *bestPath;
     int bestCost;
 
-    void initializePopulation(int **population, int populationSize);
+    void initializePopulation(int **population, int populationSize, int **distanceMatrix);
     void evaluateFitness(int **population, int populationSize, int *fitness);
     void selectParents(int **population, int populationSize, int **parents);
     void crossover(int *parent1, int *parent2, int *child);
     void mutate(int *path, double mutationRate);
+    void mutateInversion(int * path, double mutationRate);
     int calculateCost(int *path);
 };
 

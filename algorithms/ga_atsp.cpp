@@ -17,7 +17,7 @@ GASolver::~GASolver() {
 }
 
 void GASolver::solve() {
-    solveWithParameters(500, 10000, 0.02, 0.85);  // Default values
+    solveWithParameters(1000, 3000, 0.01, 0.85);  // Default values
 }
 
 void GASolver::solveWithParameters(int populationSize, int numGenerations, double mutationRate, double crossoverRate) {
@@ -27,7 +27,7 @@ void GASolver::solveWithParameters(int populationSize, int numGenerations, doubl
     }
 
     int *fitness = new int[populationSize];
-    initializePopulation(population, populationSize);
+    initializePopulation(population, populationSize, distanceMatrix);
 
     for (int generation = 0; generation < numGenerations; ++generation) {
         evaluateFitness(population, populationSize, fitness);
@@ -83,19 +83,36 @@ void GASolver::solveWithParameters(int populationSize, int numGenerations, doubl
     delete[] fitness;
 }
 
-void GASolver::initializePopulation(int **population, int populationSize) {
+void GASolver::initializePopulation(int **population, int populationSize,int **distanceMatrix) {
     for (int i = 0; i < populationSize; ++i) {
-        for (int j = 0; j < numCities; ++j) {
-            population[i][j] = j;
-        }
-        for (int j = 0; j < numCities; ++j) {
-            int swapIndex = std::rand() % numCities;
-            int temp = population[i][j];
-            population[i][j] = population[i][swapIndex];
-            population[i][swapIndex] = temp;
+        // Tablica do śledzenia odwiedzonych miast
+        bool visited[numCities] = {false};
+
+        // Start od losowego miasta
+        int currentCity = std::rand() % numCities;
+        population[i][0] = currentCity;
+        visited[currentCity] = true;
+
+        // Zachłanne wybieranie najbliższego nieodwiedzonego miasta
+        for (int j = 1; j < numCities; ++j) {
+            int nearestCity = -1;
+            int minDistance = __INT_MAX__;  // Największa możliwa wartość dla int
+            
+            for (int k = 0; k < numCities; ++k) {
+                if (!visited[k] && distanceMatrix[currentCity][k] < minDistance) {
+                    minDistance = distanceMatrix[currentCity][k];
+                    nearestCity = k;
+                }
+            }
+
+            // Dodajemy najbliższe miasto do ścieżki
+            population[i][j] = nearestCity;
+            visited[nearestCity] = true;
+            currentCity = nearestCity;
         }
     }
 }
+
 
 void GASolver::evaluateFitness(int **population, int populationSize, int *fitness) {
     for (int i = 0; i < populationSize; ++i) {
@@ -149,6 +166,24 @@ void GASolver::mutate(int *path, double mutationRate) {
         path[index2] = temp;
     }
 }
+
+void GASolver::mutateInversion(int *path, double mutationRate) {
+    if (((double)std::rand() / RAND_MAX) < mutationRate) {
+        int index1 = std::rand() % numCities;
+        int index2 = std::rand() % numCities;
+        if (index1 > index2) {
+            std::swap(index1, index2);
+        }
+        while (index1 < index2) {
+            int temp = path[index1];
+            path[index1] = path[index2];
+            path[index2] = temp;
+            index1++;
+            index2--;
+        }
+    }
+}
+
 
 int GASolver::calculateCost(int *path) {
     int cost = 0;

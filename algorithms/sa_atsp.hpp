@@ -16,9 +16,9 @@ public:
         double minTemperature,
         int iterationsPerTemp
     );
-    void printResults();
-    int getBestCost();
-    int* getBestPath();
+    void printResults() override;
+    int getBestCost() override;
+    int* getBestPath() override;
 
 private:
     int **distanceMatrix;

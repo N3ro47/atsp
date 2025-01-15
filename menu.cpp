@@ -3,6 +3,7 @@
 #include "algorithms/bb_atsp.hpp"
 #include "algorithms/bf_atsp.hpp"
 #include "algorithms/sa_atsp.hpp"
+#include "algorithms/ga_atsp.hpp"
 
 #include <chrono>
 #include <iomanip>
@@ -68,17 +69,24 @@ void Menu::solveATSP(int **matrix, int size) {
     static double minTemp = 1e-3;
     static int iterationsPerTemp = 0;
 
+    // Static variables for GA parameters
+    static int populationSize = 500;
+    static int numGenerations = 3000;
+    static double mutationRate = 0.01;
+    static double crossoverRate = 0.85;
+
     while (true) {
         int choice;
         std::cout << "\nSelect solving method:\n";
         std::cout << "1. Brute Force\n";
         std::cout << "2. Branch & Bound\n";
         std::cout << "3. Simulated Annealing\n";
-        std::cout << "4. Go Back\n";
+        std::cout << "4. Genetic Algorithm\n";  // New option for GA
+        std::cout << "5. Go Back\n";
         std::cout << "Choose an option: ";
         std::cin >> choice;
 
-        if (choice == 4) return; // Exit to the previous menu
+        if (choice == 5) return; // Exit to the previous menu
 
         int *path = new int[size];
         switch (choice) {
@@ -91,7 +99,7 @@ void Menu::solveATSP(int **matrix, int size) {
         case 3: {
             solver = new SASolver(matrix, size);
 
-            // Prompt user to choose parameter type
+            // Prompt user to choose parameter type for SA
             int saChoice;
             std::cout << "Simulated Annealing Parameters:\n";
             std::cout << "1. Use previous parameters\n";
@@ -119,6 +127,38 @@ void Menu::solveATSP(int **matrix, int size) {
 
             // Call the parameterized solve function
             dynamic_cast<SASolver *>(solver)->solveWithParameters(initialTemp, coolingRate, minTemp, iterationsPerTemp);
+            break;
+        }
+        case 4: {
+            solver = new GASolver(matrix, size);
+
+            // Prompt user to choose parameter type for GA
+            int gaChoice;
+            std::cout << "Genetic Algorithm Parameters:\n";
+            std::cout << "1. Use previous parameters\n";
+            std::cout << "2. Use default parameters\n";
+            std::cout << "3. Enter new parameters\n";
+            std::cout << "Choose an option: ";
+            std::cin >> gaChoice;
+
+            if (gaChoice == 3) { // Enter new parameters
+                std::cout << "Enter population size (default: " << populationSize << "): ";
+                std::cin >> populationSize;
+                std::cout << "Enter number of generations (default: " << numGenerations << "): ";
+                std::cin >> numGenerations;
+                std::cout << "Enter mutation rate (default: " << mutationRate << "): ";
+                std::cin >> mutationRate;
+                std::cout << "Enter crossover rate (default: " << crossoverRate << "): ";
+                std::cin >> crossoverRate;
+            } else if (gaChoice == 2) { // Use default parameters
+                populationSize = 100;
+                numGenerations = 1000;
+                mutationRate = 0.01;
+                crossoverRate = 0.8;
+            }
+
+            // Call the parameterized solve function
+            dynamic_cast<GASolver *>(solver)->solveWithParameters(populationSize, numGenerations, mutationRate, crossoverRate);
             break;
         }
         default:
